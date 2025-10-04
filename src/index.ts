@@ -1,9 +1,8 @@
-import { CommandsRegistry, handlerLogin, registerCommand, runCommand } from "./commands";
+import { CommandsRegistry, registerCommand, runCommand } from "./commands/commands";
+import { handlerLogin } from "./commands/users";
 
 function main() {
-    const registry: CommandsRegistry = {
-        commands: {}
-    }
+    const registry: CommandsRegistry = {}
     registerCommand(registry, "login", handlerLogin);
 
     let args = process.argv.slice(2);
