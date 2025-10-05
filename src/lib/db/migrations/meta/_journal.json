@@ -8,6 +8,13 @@
       "when": 1759589073495,
       "tag": "0000_cool_monster_badoon",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1759662248920,
+      "tag": "0001_supreme_celestials",
+      "breakpoints": true
     }
   ]
 }
