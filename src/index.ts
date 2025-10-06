@@ -1,4 +1,4 @@
-import { handlerAddFeed, handlerAgg } from "./commands/aggregation";
+import { handlerAddFeed, handlerAgg, handlerFeeds } from "./commands/aggregation";
 import { CommandsRegistry, registerCommand, runCommand } from "./commands/commands";
 import { handlerResetUsers } from "./commands/reset";
 import { handlerLogin, handlerRegister, handlerUsers } from "./commands/users";
@@ -11,6 +11,7 @@ async function main() {
     registerCommand(registry, "users", handlerUsers);
     registerCommand(registry, "agg", handlerAgg);
     registerCommand(registry, "addfeed", handlerAddFeed);
+    registerCommand(registry, "feeds", handlerFeeds);
 
     let args = process.argv.slice(2);
     if (args.length < 1) {

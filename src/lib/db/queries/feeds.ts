@@ -1,5 +1,6 @@
+import { eq } from "drizzle-orm";
 import { db } from "..";
-import { feeds, User } from "../schema";
+import { feeds, User, users } from "../schema";
 import { getUser } from "./users";
 
 export async function createFeed(
@@ -16,4 +17,11 @@ export async function createFeed(
     } catch (err) {
         throw new Error("could not insert into feeds");
     }
+}
+
+export async function getFeeds() {
+    const results = await db.select({ name: feeds.name, url: feeds.url, username: users.name })
+        .from(feeds)
+        .innerJoin(users, eq(feeds.user_id, users.id));
+    return results;
 }

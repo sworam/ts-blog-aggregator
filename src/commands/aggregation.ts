@@ -1,5 +1,5 @@
 import { readConfig } from "src/config";
-import { createFeed } from "src/lib/db/queries/feeds";
+import { createFeed, getFeeds } from "src/lib/db/queries/feeds";
 import { getUser } from "src/lib/db/queries/users";
 import { Feed, User } from "src/lib/db/schema";
 import { fetchFeed } from "src/rss";
@@ -35,4 +35,13 @@ function printFeed(feed: Feed, user: User) {
     console.log(`Created at: ${user.createdAt}`);
     console.log(`Updated at: ${user.updatedAt}`);
     console.log(`ID: ${user.id}`);
+}
+
+export async function handlerFeeds(cmdName: string, ...args: string[]) {
+    const feeds = await getFeeds();
+    for (const feed of feeds) {
+        console.log(`Feed: ${feed.name}`);
+        console.log(`URL: ${feed.url}`);
+        console.log(`User: ${feed.username}\n`);
+    }
 }
