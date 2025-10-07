@@ -15,6 +15,13 @@
       "when": 1759662248920,
       "tag": "0001_supreme_celestials",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1759871435834,
+      "tag": "0002_steady_earthquake",
+      "breakpoints": true
     }
   ]
 }
