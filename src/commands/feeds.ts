@@ -1,4 +1,5 @@
-import { createFeed, createFeedFollow, getFeeds } from "src/lib/db/queries/feeds";
+import { createFeedFollow } from "src/lib/db/queries/feed-follows";
+import { createFeed, getFeeds } from "src/lib/db/queries/feeds";
 import { Feed, User } from "src/lib/db/schema";
 
 export async function handlerAddFeed(_: string, user: User, ...args: string[]) {

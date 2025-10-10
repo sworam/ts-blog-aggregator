@@ -1,6 +1,6 @@
-import { and, eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { db } from "..";
-import { feedFollows, feeds, User, users } from "../schema";
+import { Feed, feeds, User, users } from "../schema";
 
 export async function createFeed(
     name: string,
@@ -37,42 +37,13 @@ export async function getFeed(url: string) {
     }
 }
 
-export async function createFeedFollow(userId: string, feedId: string) {
-    try {
-        const [newFeedFollow] = await db.insert(feedFollows).values({ userId, feedId }).returning();
-        const [result] = await db.select({
-            id: feedFollows.id,
-            createdAt: feedFollows.createdAt,
-            updatedAt: feedFollows.updatedAt,
-            feedName: feeds.name,
-            userName: users.name,
-        })
-            .from(feedFollows)
-            .where(eq(feedFollows.id, newFeedFollow.id))
-            .innerJoin(users, eq(feedFollows.userId, users.id))
-            .innerJoin(feeds, eq(feedFollows.feedId, feeds.id));
-        return result;
-    } catch (err) {
-        throw new Error("could not insert into feed_follows");
-    }
+export async function markFeedFetched(feedId: string) {
+    await db.update(feeds)
+        .set({ updatedAt: sql`NOW()`, lastFetchedAt: sql`NOW()` })
+        .where(eq(feeds.id, feedId));
 }
 
-export async function getFeedFollows(userId: string) {
-    const queriedFeedFollows = await db.select({
-        id: feedFollows.id,
-        createdAt: feedFollows.createdAt,
-        updatedAt: feedFollows.updatedAt,
-        feedName: feeds.name,
-        userName: users.name,
-    })
-        .from(feedFollows)
-        .where(eq(feedFollows.userId, userId))
-        .innerJoin(users, eq(feedFollows.userId, users.id))
-        .innerJoin(feeds, eq(feedFollows.feedId, feeds.id));
-    return queriedFeedFollows;
-}
-
-export async function deleteFeedFollow(userId: string, feedId: string) {
-    await db.delete(feedFollows)
-        .where(and(eq(feedFollows.userId, userId), eq(feedFollows.feedId, feedId)));
+export async function getNextFeedToFetch(): Promise<Feed> {
+    const [result] = await db.execute(sql`SELECT * FROM ${feeds} ORDER BY ${feeds.lastFetchedAt} ASC NULLS FIRST LIMIT 1`);
+    return result as Feed;
 }

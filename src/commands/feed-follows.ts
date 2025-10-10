@@ -1,4 +1,5 @@
-import { createFeedFollow, deleteFeedFollow, getFeed, getFeedFollows } from "src/lib/db/queries/feeds";
+import { createFeedFollow, deleteFeedFollow, getFeedFollows } from "src/lib/db/queries/feed-follows";
+import { getFeed } from "src/lib/db/queries/feeds";
 import { User } from "src/lib/db/schema";
 
 export async function handlerFollow(_: string, user: User, ...args: string[]) {
