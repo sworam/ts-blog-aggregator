@@ -1,14 +1,9 @@
 import { getNextFeedToFetch, markFeedFetched } from "src/lib/db/queries/feeds";
-import { Feed } from "src/lib/db/schema";
+import { createPost, getPostsForUser } from "src/lib/db/queries/posts";
+import { Feed, User } from "src/lib/db/schema";
 import { fetchFeed } from "src/rss";
 
 export async function handlerAgg(_: string, ...args: string[]) {
-    // const url = "https://www.wagslane.dev/index.xml";
-    // const feed = await fetchFeed(url);
-    // console.log(feed);
-    // for (const item of feed.channel.item) {
-    //     console.log(item);
-    // }
     if (args.length !== 1) {
         throw new Error("usage: agg <duration_string>");
     }
@@ -42,8 +37,13 @@ async function scrapeFeeds() {
 async function scrapeFeed(feed: Feed) {
     await markFeedFetched(feed.id);
     const fetchedFeed = await fetchFeed(feed.url);
+    console.log(`Fetched feed: ${feed.name}`);
     for (const item of fetchedFeed.channel.item) {
-        console.log(item.title);
+        try {
+            await createPost(item.title, item.link, item.description, new Date(item.pubDate), feed);
+        } catch (err) {
+            console.log("post already exists");
+        }
     }
 }
 
@@ -71,4 +71,19 @@ function parseDuration(durationString: string) {
             totalMS = amount * 1000 * 60 * 60;
     }
     return totalMS;
+}
+
+export async function handlerBrowse(_: string, user: User, ...args: string[]) {
+    let numPosts = 2;
+    if (args.length === 1) {
+        try {
+            numPosts = parseInt(args[0]);
+        } catch (err) {
+            throw new Error("usage: browse <browse_limit_int>");
+        }
+    }
+    const posts = await getPostsForUser(user, numPosts);
+    for (const post of posts) {
+        console.log(post);
+    }
 }
